@@ -130,13 +130,20 @@ table.tx tr:last-child td{border-bottom:none}
 table.tx td.txempty{text-align:center;color:var(--mut);white-space:normal;line-height:1.9;padding:22px 14px}
 footer{margin-top:36px;border-top:1px solid var(--line);padding-top:16px;color:var(--dim);font-size:12.5px;line-height:1.8}
 .zfsel{background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:99px;padding:7px 12px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;max-width:100%}
-.tbl-scroll.mini table.cats td.team,.tbl-scroll.mini table.cats th.team{width:50px;min-width:50px;max-width:50px}
-.tbl-scroll.mini table.cats td.team .nm{display:none}
+/* mini shrink animation: names/rank ease out via max-width+opacity, column width follows content */
+table.cats td.team .nm{transition:opacity .2s ease,max-width .34s cubic-bezier(.4,0,.2,1);max-width:120px}
+table.zs td.pl-cell .pn2{transition:opacity .2s ease,max-width .34s cubic-bezier(.4,0,.2,1);max-width:119px;overflow:hidden}
+table.zs td.pl-cell .rk{transition:opacity .2s ease,max-width .34s cubic-bezier(.4,0,.2,1);max-width:15px;overflow:hidden}
+table.cats th.team,table.zs th.pl-cell{transition:font-size .25s ease}
+.cell-team,.cell-pl{transition:gap .34s cubic-bezier(.4,0,.2,1)}
+.tbl-scroll.mini .cell-team,.tbl-scroll.mini .cell-pl{gap:0}
+.tbl-scroll.mini table.cats td.team,.tbl-scroll.mini table.cats th.team{width:auto;min-width:0;max-width:none}
+.tbl-scroll.mini table.cats td.team .nm{opacity:0;max-width:0}
 .tbl-scroll.mini table.cats th.team{font-size:0}
-.tbl-scroll.mini table.zs td.pl-cell,.tbl-scroll.mini table.zs th.pl-cell{width:50px;min-width:50px;max-width:50px}
-.tbl-scroll.mini table.zs td.pl-cell .rk,.tbl-scroll.mini table.zs td.pl-cell .pn2{display:none}
+.tbl-scroll.mini table.zs td.pl-cell,.tbl-scroll.mini table.zs th.pl-cell{width:auto;min-width:0;max-width:none}
+.tbl-scroll.mini table.zs td.pl-cell .rk{opacity:0;max-width:0;min-width:0}
+.tbl-scroll.mini table.zs td.pl-cell .pn2{opacity:0;max-width:0}
 .tbl-scroll.mini table.zs th.pl-cell{font-size:0}
-table.cats td.team,table.cats th.team,table.zs td.pl-cell,table.zs th.pl-cell{transition:width .15s ease,min-width .15s ease,max-width .15s ease}
 </style>
 </head>
 <body>
