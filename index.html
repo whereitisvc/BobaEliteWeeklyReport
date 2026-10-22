@@ -130,6 +130,13 @@ table.tx tr:last-child td{border-bottom:none}
 table.tx td.txempty{text-align:center;color:var(--mut);white-space:normal;line-height:1.9;padding:22px 14px}
 footer{margin-top:36px;border-top:1px solid var(--line);padding-top:16px;color:var(--dim);font-size:12.5px;line-height:1.8}
 .zfsel{background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:99px;padding:7px 12px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;max-width:100%}
+.tbl-scroll.mini table.cats td.team,.tbl-scroll.mini table.cats th.team{width:50px;min-width:50px;max-width:50px}
+.tbl-scroll.mini table.cats td.team .nm{display:none}
+.tbl-scroll.mini table.cats th.team{font-size:0}
+.tbl-scroll.mini table.zs td.pl-cell,.tbl-scroll.mini table.zs th.pl-cell{width:50px;min-width:50px;max-width:50px}
+.tbl-scroll.mini table.zs td.pl-cell .rk,.tbl-scroll.mini table.zs td.pl-cell .pn2{display:none}
+.tbl-scroll.mini table.zs th.pl-cell{font-size:0}
+table.cats td.team,table.cats th.team,table.zs td.pl-cell,table.zs th.pl-cell{transition:width .15s ease,min-width .15s ease,max-width .15s ease}
 </style>
 </head>
 <body>
@@ -532,6 +539,15 @@ document.addEventListener('scroll', function(e){
       pinApply(sc);
     }
   }
+}, {capture:true, passive:true});
+/* 左右捲動時第一欄縮小：.tbl-scroll 捲過 24px 後加 .mini（第一欄只剩頭像），捲回左緣移除。
+   只作用於類別榜（.cats）與球員榜（.zs），What-if 與交易表不在範圍內（CSS 已限定）。 */
+document.addEventListener('scroll', function(e){
+  var sc = e.target;
+  if(!sc || !sc.classList || !sc.classList.contains('tbl-scroll')) return;
+  var mini = sc.scrollLeft > 24;
+  if(mini && !sc.classList.contains('mini')) sc.classList.add('mini');
+  else if(!mini && sc.classList.contains('mini')) sc.classList.remove('mini');
 }, {capture:true, passive:true});
 </script>
 </body>
