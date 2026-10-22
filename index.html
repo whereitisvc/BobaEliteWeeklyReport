@@ -547,14 +547,35 @@ document.addEventListener('scroll', function(e){
     }
   }
 }, {capture:true, passive:true});
-/* 左右捲動時第一欄縮小：.tbl-scroll 捲過 24px 後加 .mini（第一欄只剩頭像），捲回左緣移除。
-   只作用於類別榜（.cats）與球員榜（.zs），What-if 與交易表不在範圍內（CSS 已限定）。 */
+/* 第一欄縮小（狀態機＋捲動補償）：捲過 24px 觸發 .mini 縮小動畫，動畫期間逐格量測第一欄
+   目前寬度、把 scrollLeft 同步扣掉已縮小的量——資料欄的畫面位置因此不跳動，
+   第一個資料欄（Total Z）全程完整可見、貼著第一欄左緣滑動，不會被蓋住一半。
+   捲回左緣（<=2）展開。只作用於含 .cats／.zs 的 .tbl-scroll（What-if／交易表除外）。 */
 document.addEventListener('scroll', function(e){
   var sc = e.target;
   if(!sc || !sc.classList || !sc.classList.contains('tbl-scroll')) return;
-  var mini = sc.scrollLeft > 24;
-  if(mini && !sc.classList.contains('mini')) sc.classList.add('mini');
-  else if(!mini && sc.classList.contains('mini')) sc.classList.remove('mini');
+  if(!sc.querySelector('table.cats, table.zs')) return;
+  var mode = sc.dataset.mode || 'full';
+  if(mode === 'full' && sc.scrollLeft > 24){
+    sc.dataset.mode = 'shrinking';
+    var cell = sc.querySelector('td.team, td.pl-cell');
+    var W0 = cell ? cell.offsetWidth : 0;
+    var S0 = sc.scrollLeft;
+    sc.classList.add('mini');
+    var t0 = Date.now();
+    var step = function(){
+      if(sc.isConnected === false){ sc.dataset.mode = 'mini'; return; }
+      var w = cell ? cell.offsetWidth : 0;
+      if(w && W0){ var target = S0 - (W0 - w); if(target < 0) target = 0; if(Math.abs(sc.scrollLeft - target) > 0.5) sc.scrollLeft = target; }
+      if(Date.now() - t0 < 380 && sc.dataset.mode === 'shrinking'){ requestAnimationFrame(step); }
+      else { sc.dataset.mode = 'mini'; }
+    };
+    requestAnimationFrame(step);
+  } else if(mode === 'mini' && sc.scrollLeft <= 2){
+    sc.dataset.mode = 'expanding';
+    sc.classList.remove('mini');
+    setTimeout(function(){ if(sc.dataset.mode === 'expanding') sc.dataset.mode = 'full'; }, 380);
+  }
 }, {capture:true, passive:true});
 </script>
 </body>
