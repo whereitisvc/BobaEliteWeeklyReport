@@ -343,21 +343,11 @@ function renderWI(){
     html += '<th><span class="opp-head">'+avatarHTML(o,true)+'<span class="on">'+o.name+'</span></span></th>';
   });
   html += '</tr></thead><tbody>';
-  /* heat map:差距以該項 12 隊全距正規化，綠＝自家佔優、紅＝落後 */
-  var catRange = {};
-  CATS.forEach(function(c){
-    var vals = TEAMS.map(function(x){ return x[c.key]; });
-    catRange[c.key] = Math.max.apply(null, vals) - Math.min.apply(null, vals) || 1;
-  });
-  function diffHeat(ownVal, oppVal, cat){
-    if(ownVal==null || oppVal==null) return '';
-    if(ownVal === oppVal) return ' style="background:rgba(240,180,41,.14)"';
-    var d = (oppVal - ownVal) / catRange[cat.key];
-    if(cat.low) d = -d; /* d > 0 = 對手該項較佳 */
-    var inten = Math.min(1, Math.abs(d) * 1.8);
-    if(inten < 0.03) return '';
-    return ' style="background:rgba(' + (d < 0 ? '74,222,128' : '248,113,113') + ',' + (inten * 0.50).toFixed(2) + ')"';
-  }
+  /* heat map（2026-10-22 改版）：全矩陣統一以「數值在 12 隊中的名次」上色（rankHeat），
+     與類別榜／自家欄同一套語言——數值強＝綠、弱＝紅。對手格的勝負由 ✓／＝ 標記與 Result 列表達。
+     舊 diffHeat（與自家差距上色）會把對手 7 顆三分這種弱數值因「輸你很多」染成全綠，經使用者指出後廢棄。 */
+  var rankMaps = {};
+  CATS.forEach(function(c){ rankMaps[c.key] = ranksFor(c); });
   /* GP 列（第一列）：只顯示出賽人次，非計分類別——不判勝負、不上熱力色；無資料時顯示 — */
   html += '<tr><td class="own num">'+(t.gp!=null?t.gp:'—')+'</td><td class="cat">GP</td>';
   opps.forEach(function(oi){
@@ -369,7 +359,7 @@ function renderWI(){
      注意：own 欄是 sticky 固定欄，背景必須完全不透明——rankHeat 的 rgba 半透明直接用，
      會讓捲到下方的對手數據透出來疊字（2026-10-22 使用者錄影實證）。故先與底色 card2(#1d232d) 混成 rgb 再上。 */
   var ownRanks = {};
-  CATS.forEach(function(c){ ownRanks[c.key] = ranksFor(c)[currentTeam]; });
+  CATS.forEach(function(c){ ownRanks[c.key] = rankMaps[c.key][currentTeam]; });
   function ownHeat(rank, n){
     var st = rankHeat(rank, n);
     if(!st) return '';
@@ -387,7 +377,7 @@ function renderWI(){
       var r = v.cells[c.key];
       var cls = r>0 ? 'win' : (r===0 ? 'tie' : 'lose');
       var mk = r>0 ? '<span class="mk">✓</span>' : (r===0 ? '<span class="mk">＝</span>' : '');
-      html += '<td class="opp '+cls+' num"'+diffHeat(t[c.key], o[c.key], c)+'>'+c.fmt(o[c.key])+mk+'</td>';
+      html += '<td class="opp '+cls+' num"'+rankHeat(rankMaps[c.key][v.oi], TEAMS.length)+'>'+c.fmt(o[c.key])+mk+'</td>';
     });
     html += '</tr>';
   });
