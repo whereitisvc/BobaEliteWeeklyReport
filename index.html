@@ -81,7 +81,7 @@ td.gp{color:var(--dim)}
 .chip{display:flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:99px;padding:5px 12px 5px 5px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
 .chip[aria-pressed="true"]{border-color:var(--gold);background:rgba(240,180,41,.13)}
 .wi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
-.wi-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;-webkit-transform:translateZ(0);transform:translateZ(0)}
+.wi-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table.wi-table{border-collapse:separate;border-spacing:0;font-size:13px;min-width:100%}
 table.wi-table th,table.wi-table td{padding:8px 10px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap;min-width:74px}
 table.wi-table thead th{background:var(--bg2);font-size:11px;color:var(--mut)}
@@ -365,11 +365,22 @@ function renderWI(){
     html += '<td class="opp num">'+(og.gp!=null?og.gp:'—')+'</td>';
   });
   html += '</tr>';
-  /* 左邊自家數據欄也要 heat map：以該項 12 隊名次上色（與類別榜同一套 rankHeat），GP／Wins／Result 列不上色 */
+  /* 左邊自家數據欄也要 heat map：以該項 12 隊名次上色（與類別榜同一套 rankHeat），GP／Wins／Result 列不上色。
+     注意：own 欄是 sticky 固定欄，背景必須完全不透明——rankHeat 的 rgba 半透明直接用，
+     會讓捲到下方的對手數據透出來疊字（2026-10-22 使用者錄影實證）。故先與底色 card2(#1d232d) 混成 rgb 再上。 */
   var ownRanks = {};
   CATS.forEach(function(c){ ownRanks[c.key] = ranksFor(c)[currentTeam]; });
+  function ownHeat(rank, n){
+    var st = rankHeat(rank, n);
+    if(!st) return '';
+    var m = st.match(/rgba\((\d+),(\d+),(\d+),([\d.]+)\)/);
+    if(!m) return st;
+    var a = parseFloat(m[4]);
+    var R = Math.round(+m[1]*a + 29*(1-a)), G = Math.round(+m[2]*a + 35*(1-a)), B = Math.round(+m[3]*a + 45*(1-a));
+    return ' style="background:rgb(' + R + ',' + G + ',' + B + ')"';
+  }
   CATS.forEach(function(c){
-    html += '<tr><td class="own num"'+rankHeat(ownRanks[c.key], TEAMS.length)+'>'+(t[c.key]!=null ? c.fmt(t[c.key]) : '—')+'</td><td class="cat">'+c.label+'</td>';
+    html += '<tr><td class="own num"'+ownHeat(ownRanks[c.key], TEAMS.length)+'>'+(t[c.key]!=null ? c.fmt(t[c.key]) : '—')+'</td><td class="cat">'+c.label+'</td>';
     vsOpp.forEach(function(v){
       var o = TEAMS[v.oi];
       if(!v.has){ html += '<td class="opp num">—</td>'; return; }
