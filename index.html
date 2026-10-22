@@ -68,10 +68,11 @@ section{margin-top:30px}
 .tbl-frame{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);overflow:hidden}
 .tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table.cats{border-collapse:separate;border-spacing:0;min-width:100%;font-size:13px}
-table.cats th,table.cats td{padding:9px 8px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap;min-width:53px}
+table.cats th,table.cats td{padding:9px 8px;text-align:center;border-bottom:1px solid #000;border-right:1px solid #000;white-space:nowrap;min-width:53px}
 table.cats th{font-size:11px;color:var(--dim);letter-spacing:.06em;background:var(--bg2)}
 table.cats td.team,table.cats th.team{text-align:left;position:sticky;left:0;z-index:3;background:var(--card);font-weight:700;width:176px;min-width:176px;max-width:176px;overflow:hidden;box-shadow:6px 0 8px -6px rgba(0,0,0,.55)}
 table.cats tr:last-child td{border-bottom:none}
+table.cats td:last-child,table.cats th:last-child,table.wi-table td:last-child,table.wi-table th:last-child,table.zs td:last-child,table.zs th:last-child{border-right:none}
 table.cats th.team{background:var(--bg2);z-index:4}
 table.cats td.team .cell-team{display:flex;align-items:center;gap:8px}
 table.cats td.team .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}
@@ -83,7 +84,7 @@ td.gp{color:var(--dim)}
 .wi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
 .wi-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table.wi-table{border-collapse:separate;border-spacing:0;font-size:13px;min-width:100%}
-table.wi-table th,table.wi-table td{padding:8px 10px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap;min-width:74px}
+table.wi-table th,table.wi-table td{padding:8px 10px;text-align:center;border-bottom:1px solid #000;border-right:1px solid #000;white-space:nowrap;min-width:74px}
 table.wi-table thead th{background:var(--bg2);font-size:11px;color:var(--mut)}
 table.wi-table thead th .opp-head{display:flex;flex-direction:column;align-items:center;gap:4px}
 table.wi-table thead th .opp-head .on{max-width:74px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink);font-size:11px}
@@ -96,7 +97,7 @@ table.wi-table td.opp.win{background:rgba(74,222,128,.10)}
 table.wi-table td.opp .mk{font-weight:900;margin-left:5px}
 table.wi-table td.opp.win .mk{color:var(--green)}
 table.wi-table td.opp.tie .mk{color:var(--gold)}
-table.wi-table tr.tot td{font-weight:900;background:rgba(240,180,41,.07);border-bottom:1px solid var(--line)}
+table.wi-table tr.tot td{font-weight:900;background:rgba(240,180,41,.07);border-bottom:1px solid #000}
 table.wi-table tr.tot td.own,table.wi-table tr.tot td.cat{background:var(--card2)}
 table.wi-table tr.tot td.res-win{color:var(--gold)}
 table.wi-table tr.tot td.res-lose{color:var(--mut)}
@@ -107,7 +108,7 @@ table.wi-table tbody tr:last-child td{border-bottom:none}
 .daytab[aria-pressed="true"]{border-color:var(--teal);background:rgba(45,212,191,.13);color:var(--teal)}
 .daytab.nodata{opacity:.5}
 table.zs{border-collapse:separate;border-spacing:0;min-width:100%;font-size:13px}
-table.zs th,table.zs td{padding:8px 7px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap;min-width:64px}
+table.zs th,table.zs td{padding:8px 7px;text-align:center;border-bottom:1px solid #000;border-right:1px solid #000;white-space:nowrap;min-width:64px}
 table.zs th{font-size:11px;color:var(--dim);letter-spacing:.06em;background:var(--bg2)}
 table.zs td.pl-cell,table.zs th.pl-cell{text-align:left;position:sticky;left:0;background:var(--card);z-index:3;width:196px;min-width:196px;max-width:196px;overflow:hidden;box-shadow:6px 0 8px -6px rgba(0,0,0,.55)}
 table.zs tr:last-child td{border-bottom:none}
