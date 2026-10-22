@@ -83,7 +83,8 @@ td.gp{color:var(--dim)}
 .chip[aria-pressed="true"]{border-color:var(--gold);background:rgba(240,180,41,.13)}
 .wi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
 .wi-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-table.wi-table{border-collapse:separate;border-spacing:0;font-size:13px;min-width:100%}
+table.wi-table{border-collapse:separate;border-spacing:0;font-size:13px;min-width:100%;table-layout:fixed}
+table.wi-table thead th{width:88px}
 table.wi-table th,table.wi-table td{padding:8px 10px;text-align:center;border-bottom:1px solid #000;border-right:1px solid #000;white-space:nowrap;min-width:74px}
 table.wi-table thead th{background:var(--bg2);font-size:11px;color:var(--mut)}
 table.wi-table thead th .opp-head{display:flex;flex-direction:column;align-items:center;gap:4px}
