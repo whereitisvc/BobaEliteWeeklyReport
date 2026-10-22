@@ -129,6 +129,7 @@ table.tx th{font-size:11px;color:var(--dim);letter-spacing:.06em;background:var(
 table.tx tr:last-child td{border-bottom:none}
 table.tx td.txempty{text-align:center;color:var(--mut);white-space:normal;line-height:1.9;padding:22px 14px}
 footer{margin-top:36px;border-top:1px solid var(--line);padding-top:16px;color:var(--dim);font-size:12.5px;line-height:1.8}
+.zfsel{background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:99px;padding:7px 12px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;max-width:100%}
 </style>
 </head>
 <body>
@@ -389,6 +390,7 @@ function renderWI(){
 /* ZDAYS／球員照片對照 PHOTOS／交易 TXROWS／WEEKS 資料集皆在 weeks-data JSON 區塊內
    （照片為 data URI、球隊 avatar 亦然），由 boot() 解析後供下方渲染函式使用。 */
 var currentDay = 1;
+var zTeamFilter = '';
 function heatStyle(z, max){
   var t = Math.max(-1, Math.min(1, z / max));
   if(!t) return '';
@@ -404,6 +406,7 @@ function renderDayTabs(){
   for(var d = 1; d <= W.ndays; d++){
     html += '<button class="daytab' + (ZDAYS[d] ? '' : ' nodata') + '" data-day="' + d + '" aria-pressed="' + (d === currentDay) + '">Day ' + d + ' (' + DAYDATES[d] + ')</button>';
   }
+  html += '<select class="zfsel" id="zTeamSel" aria-label="依隊伍篩選球員"><option value="">全部隊伍</option>' + W.teams.map(function(t){ var nm = String(t.name).replace(/"/g, '&quot;'); return '<option value="' + nm + '"' + (zTeamFilter === t.name ? ' selected' : '') + '>' + t.name + '</option>'; }).join('') + '</select>';
   document.getElementById('daytabs').innerHTML = html;
   var btns = document.querySelectorAll('.daytab');
   for(var i = 0; i < btns.length; i++){
@@ -412,20 +415,29 @@ function renderDayTabs(){
       renderDayTabs(); renderZ();
     });
   }
+  var zsel = document.getElementById('zTeamSel');
+  if(zsel){ zsel.addEventListener('change', function(){ zTeamFilter = this.value; renderZ(); }); }
 }
 function zcell(val, z){
   return '<td class="num" title="z = ' + zf(z) + '"' + heatStyle(z, 3) + '>' + val + '</td>';
 }
 function renderZ(){
-  var rows = ZDAYS[currentDay], el = document.getElementById('zbody');
+  var allRows = ZDAYS[currentDay], rows = allRows, el = document.getElementById('zbody');
   if(!rows){
     el.innerHTML = '<div class="zempty">Day ' + currentDay + '（' + DAYDATES[currentDay] + '）尚無出賽數據。<br>今晚比賽結束、每晚更新後補入；週一夜定版後，本週六天皆可回看。</div>';
     return;
   }
+  if(zTeamFilter){
+    rows = allRows.filter(function(p){ return p[1] === zTeamFilter; });
+    if(!rows.length){
+      el.innerHTML = '<div class="zempty">' + zTeamFilter + ' 在 Day ' + currentDay + '（' + DAYDATES[currentDay] + '）沒有球員出賽。<br>換一天看看，或把上方隊伍篩選切回「全部隊伍」。</div>';
+      return;
+    }
+  }
   var html = '<div class="tbl-frame"><div class="tbl-scroll"><table class="zs"><thead><tr><th class="pl-cell">球員</th><th>Total Z</th><th>FG%</th><th>FT%</th><th>3PTM</th><th>PTS</th><th>REB</th><th>AST</th><th>ST</th><th>BLK</th><th>TO</th></tr></thead><tbody>';
   rows.forEach(function(p, i){
     var head = PHOTOS[p[0]] ? '<img class="av sm" src="' + PHOTOS[p[0]] + '" alt="' + p[0] + ' 頭像">' : '<span class="avsil sm" role="img" aria-label="' + p[0] + '（尚無驗證頭像）"></span>';
-    html += '<tr><td class="pl-cell"><span class="cell-pl"><span class="rk num">' + (i + 1) + '</span>' + head + '<span class="pn2"><span class="nm">' + p[0] + '</span><span class="tm">' + p[1] + '</span></span></span></td>';
+    html += '<tr><td class="pl-cell"><span class="cell-pl"><span class="rk num">' + (allRows.indexOf(p) + 1) + '</span>' + head + '<span class="pn2"><span class="nm">' + p[0] + '</span><span class="tm">' + p[1] + '</span></span></span></td>';
     html += '<td class="num tot" title="Total Z = ' + zf(p[22]) + '"' + heatStyle(p[22], 8) + '>' + zf(p[22]) + '</td>';
     html += '<td class="num" title="z = ' + zf(p[13]) + '"' + heatStyle(p[13], 3) + '>' + pctFmt(p[2], p[3]) + (p[3] ? '<span class="sub2">(' + p[2] + '/' + p[3] + ')</span>' : '') + '</td>';
     html += '<td class="num" title="z = ' + zf(p[14]) + '"' + heatStyle(p[14], 3) + '>' + pctFmt(p[4], p[5]) + (p[5] ? '<span class="sub2">(' + p[4] + '/' + p[5] + ')</span>' : '') + '</td>';
