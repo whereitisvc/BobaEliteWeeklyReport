@@ -83,17 +83,18 @@ td.gp{color:var(--dim)}
 .chip[aria-pressed="true"]{border-color:var(--gold);background:rgba(240,180,41,.13)}
 .wi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
 .wi-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-table.wi-table{border-collapse:separate;border-spacing:0;font-size:13px;min-width:100%;table-layout:fixed}
-table.wi-table thead th{width:96px}
+table.wi-table{border-collapse:separate;border-spacing:0;font-size:13px;min-width:100%;width:1192px;table-layout:fixed}
+table.wi-table thead th{width:96px;min-width:96px;max-width:96px}
+table.wi-table td.opp{width:96px;min-width:96px;max-width:96px}
 table.wi-table th,table.wi-table td{padding:8px 10px;text-align:center;border-bottom:1px solid #000;border-right:1px solid #000;white-space:nowrap;min-width:74px}
 table.wi-table thead th{background:var(--bg2);font-size:11px;color:var(--mut)}
 table.wi-table thead th .opp-head{display:flex;flex-direction:column;align-items:center;gap:4px}
 table.wi-table thead th .opp-head .on{max-width:88px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink);font-size:11px}
-table.wi-table td.own,table.wi-table th.own{position:sticky;left:0;z-index:3;background:var(--card2);font-weight:700;min-width:64px;width:64px}
-table.wi-table td.cat,table.wi-table th.cat{position:sticky;left:64px;z-index:3;background:var(--card2);font-family:"Barlow Condensed",sans-serif;font-weight:700;letter-spacing:.08em;color:var(--mut);min-width:58px;width:58px;box-shadow:6px 0 8px -6px rgba(0,0,0,.55)}
+table.wi-table td.own,table.wi-table th.own{position:sticky;left:0;z-index:3;background:var(--card2);font-weight:700;min-width:78px;width:78px;max-width:78px}
+table.wi-table td.cat,table.wi-table th.cat{position:sticky;left:78px;z-index:3;background:var(--card2);font-family:"Barlow Condensed",sans-serif;font-weight:700;letter-spacing:.08em;color:var(--mut);min-width:58px;width:58px;max-width:58px;box-shadow:6px 0 8px -6px rgba(0,0,0,.55)}
 table.wi-table thead th.own,table.wi-table thead th.cat{background:var(--bg2);z-index:4}
 table.wi-table thead th.own .own-head{display:flex;flex-direction:column;align-items:center;gap:4px}
-table.wi-table thead th.own .own-head .on{max-width:64px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--gold);font-size:11px}
+table.wi-table thead th.own .own-head .on{max-width:74px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--gold);font-size:11px}
 table.wi-table td.opp.win{background:rgba(74,222,128,.10)}
 table.wi-table td.opp .mk{font-weight:900;margin-left:5px}
 table.wi-table td.opp.win .mk{color:var(--green)}
@@ -344,7 +345,7 @@ function renderWI(){
     var has = CATS.every(function(cc){ return t[cc.key]!=null && o[cc.key]!=null; });
     return {oi:oi, w:w, l:l, tie:tie, cells:cells, has:has, scoreW: has ? w + tie*0.5 : null, scoreL: has ? l + tie*0.5 : null};
   });
-  var html = '<div class="wi-scroll"><table class="wi-table"><colgroup><col style="width:64px"><col style="width:58px">' + opps.map(function(){ return '<col style="width:96px">'; }).join('') + '</colgroup><thead><tr>';
+  var html = '<div class="wi-scroll"><table class="wi-table"><colgroup><col style="width:78px"><col style="width:58px">' + opps.map(function(){ return '<col style="width:96px">'; }).join('') + '</colgroup><thead><tr>';
   html += '<th class="own"><span class="own-head">'+avatarHTML(t,true)+'<span class="on">'+t.name+'</span></span></th>';
   html += '<th class="cat">項目</th>';
   opps.forEach(function(oi){
