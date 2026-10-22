@@ -365,8 +365,11 @@ function renderWI(){
     html += '<td class="opp num">'+(og.gp!=null?og.gp:'—')+'</td>';
   });
   html += '</tr>';
+  /* 左邊自家數據欄也要 heat map：以該項 12 隊名次上色（與類別榜同一套 rankHeat），GP／Wins／Result 列不上色 */
+  var ownRanks = {};
+  CATS.forEach(function(c){ ownRanks[c.key] = ranksFor(c)[currentTeam]; });
   CATS.forEach(function(c){
-    html += '<tr><td class="own num">'+(t[c.key]!=null ? c.fmt(t[c.key]) : '—')+'</td><td class="cat">'+c.label+'</td>';
+    html += '<tr><td class="own num"'+rankHeat(ownRanks[c.key], TEAMS.length)+'>'+(t[c.key]!=null ? c.fmt(t[c.key]) : '—')+'</td><td class="cat">'+c.label+'</td>';
     vsOpp.forEach(function(v){
       var o = TEAMS[v.oi];
       if(!v.has){ html += '<td class="opp num">—</td>'; return; }
