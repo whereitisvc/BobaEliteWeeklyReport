@@ -164,6 +164,7 @@ table.cats th.team,table.zs th.pl-cell{transition:font-size .25s ease}
     <a href="#cats">類別排名榜</a>
     <a href="#whatif">What-if 對戰</a>
     <a href="#zscore">每日球員 Z 排行</a>
+    <a href="#fa" id="faNav">FA 球員 Top 10</a>
     <a href="#tx">本週交易</a>
   </nav>
 </header>
@@ -472,11 +473,11 @@ function renderZ(){
   el.innerHTML = html;
 }
 function renderFA(){
-  var sec = document.getElementById('fa'), el = document.getElementById('fabody');
+  var sec = document.getElementById('fa'), el = document.getElementById('fabody'), nav = document.getElementById('faNav');
   var has = false;
   for(var k in FADAILY){ if(FADAILY[k] && FADAILY[k].length) has = true; }
-  if(!has){ sec.style.display = 'none'; return; }
-  sec.style.display = '';
+  if(!has){ sec.style.display = 'none'; if(nav) nav.style.display = 'none'; return; }
+  sec.style.display = ''; if(nav) nav.style.display = '';
   var rows = FADAILY[currentDay];
   if(!rows || !rows.length){
     el.innerHTML = '<div class="zempty">Day ' + currentDay + '（' + DAYDATES[currentDay] + '）尚無 FA 資料。<br>每晚更新後逐日補入。</div>';
