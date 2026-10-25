@@ -104,6 +104,12 @@ table.wi-table tr.tot td.own,table.wi-table tr.tot td.cat{background:var(--card2
 table.wi-table tr.tot td.res-win{color:var(--gold)}
 table.wi-table tr.tot td.res-lose{color:var(--mut)}
 table.wi-table tbody tr:last-child td{border-bottom:none}
+/* 本週實際對手欄（週資料 myOpp）：青藍 accent 內框＋表頭徽章，與 heat 綠/紅、平手金色區隔。
+   只加 box-shadow 內框與徽章，不動欄寬、colgroup、sticky 兩欄。 */
+table.wi-table thead th.myopp{box-shadow:inset 0 0 0 2px #38bdf8}
+table.wi-table td.myopp{box-shadow:inset 2px 0 0 #38bdf8,inset -2px 0 0 #38bdf8}
+table.wi-table tbody tr:last-child td.myopp{box-shadow:inset 2px 0 0 #38bdf8,inset -2px 0 0 #38bdf8,inset 0 -2px 0 #38bdf8}
+.myopp-badge{display:inline-block;background:#38bdf8;color:#082f49;font-size:10px;font-weight:900;line-height:1.25;padding:2px 6px;border-radius:99px;letter-spacing:.03em}
 /* daily z-score */
 .daytabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .daytab{background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:99px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
@@ -333,6 +339,9 @@ function renderChips(){
 function fmtScore(v){ return v % 1 === 0 ? String(v) : v.toFixed(1); }
 function renderWI(){
   var t = TEAMS[currentTeam], s = sortedIdx();
+  /* 本週實際對手標示：週資料可選欄位 myOpp（自家隊當周正式對手隊名）；欄位不存在或為空就不標示 */
+  var myOppName = (typeof W !== 'undefined' && W && W.myOpp) ? W.myOpp : null;
+  function isMyOpp(oi){ return !!myOppName && TEAMS[oi].name === myOppName; }
   var opps = s.filter(function(oi){ return oi !== currentTeam; });
   /* per-opponent results */
   var vsOpp = opps.map(function(oi){
@@ -350,7 +359,8 @@ function renderWI(){
   html += '<th class="cat">項目</th>';
   opps.forEach(function(oi){
     var o = TEAMS[oi];
-    html += '<th><span class="opp-head">'+avatarHTML(o,true)+'<span class="on">'+o.name+'</span></span></th>';
+    var mo = isMyOpp(oi);
+    html += '<th'+(mo ? ' class="myopp"' : '')+'><span class="opp-head">'+avatarHTML(o,true)+'<span class="on">'+o.name+'</span>'+(mo ? '<span class="myopp-badge">🎯 本週對手</span>' : '')+'</span></th>';
   });
   html += '</tr></thead><tbody>';
   /* heat map（2026-10-22 改版）：全矩陣統一以「數值在 12 隊中的名次」上色（rankHeat），
@@ -362,7 +372,7 @@ function renderWI(){
   html += '<tr><td class="own num">'+(t.gp!=null?t.gp:'—')+'</td><td class="cat">GP</td>';
   opps.forEach(function(oi){
     var og = TEAMS[oi];
-    html += '<td class="opp num">'+(og.gp!=null?og.gp:'—')+'</td>';
+    html += '<td class="opp num'+(isMyOpp(oi) ? ' myopp' : '')+'">'+(og.gp!=null?og.gp:'—')+'</td>';
   });
   html += '</tr>';
   /* 左邊自家數據欄也要 heat map：以該項 12 隊名次上色（與類別榜同一套 rankHeat），GP／Wins／Result 列不上色。
@@ -383,21 +393,23 @@ function renderWI(){
     html += '<tr><td class="own num"'+ownHeat(ownRanks[c.key], TEAMS.length)+'>'+(t[c.key]!=null ? c.fmt(t[c.key]) : '—')+'</td><td class="cat">'+c.label+'</td>';
     vsOpp.forEach(function(v){
       var o = TEAMS[v.oi];
-      if(!v.has){ html += '<td class="opp num">—</td>'; return; }
+      var mocls = isMyOpp(v.oi) ? ' myopp' : '';
+      if(!v.has){ html += '<td class="opp num'+mocls+'">—</td>'; return; }
       var r = v.cells[c.key];
       var cls = r>0 ? 'win' : (r===0 ? 'tie' : 'lose');
       var mk = r>0 ? '<span class="mk">✓</span>' : (r===0 ? '<span class="mk">＝</span>' : '');
-      html += '<td class="opp '+cls+' num"'+rankHeat(rankMaps[c.key][v.oi], TEAMS.length)+'>'+c.fmt(o[c.key])+mk+'</td>';
+      html += '<td class="opp '+cls+' num'+mocls+'"'+rankHeat(rankMaps[c.key][v.oi], TEAMS.length)+'>'+c.fmt(o[c.key])+mk+'</td>';
     });
     html += '</tr>';
   });
   /* Wins row */
   html += '<tr class="tot"><td class="own num">'+(t.wins!=null ? t.wins.toFixed(1) : '—')+'</td><td class="cat">Wins</td>';
   vsOpp.forEach(function(v){
-    if(v.scoreW==null){ html += '<td class="num">—</td>'; return; }
+    var mocls = isMyOpp(v.oi) ? ' myopp' : '';
+    if(v.scoreW==null){ html += '<td class="num'+mocls+'">—</td>'; return; }
     var tt = (v.scoreW - 4.5) / 4.5, bg = '';
     if(tt) bg = ' style="background:rgba(' + (tt > 0 ? '74,222,128' : '248,113,113') + ',' + (Math.abs(tt) * 0.45).toFixed(2) + ')"';
-    html += '<td class="num"'+bg+'>'+fmtScore(v.scoreW)+'</td>';
+    html += '<td class="num'+mocls+'"'+bg+'>'+fmtScore(v.scoreW)+'</td>';
   });
   html += '</tr>';
   /* Result row — 比數只顯示勝：敗，平手不列入比數（與原始戰報表 Result 列一致） */
@@ -405,9 +417,10 @@ function renderWI(){
   var anyData = CATS.every(function(c){ return t[c.key]!=null; });
   html += '<tr class="tot"><td class="own num" style="font-size:11px">'+(anyData ? rec.W+'W–'+rec.L+'L–'+rec.T+'T' : '— : —')+'</td><td class="cat">Result</td>';
   vsOpp.forEach(function(v){
-    if(!v.has){ html += '<td class="num">— : —</td>'; return; }
+    var mocls = isMyOpp(v.oi) ? ' myopp' : '';
+    if(!v.has){ html += '<td class="num'+mocls+'">— : —</td>'; return; }
     var cls = v.w>v.l ? 'res-win' : (v.w<v.l ? 'res-lose' : '');
-    html += '<td class="num '+cls+'">'+v.w+' : '+v.l+'</td>';
+    html += '<td class="num '+cls+mocls+'">'+v.w+' : '+v.l+'</td>';
   });
   html += '</tr>';
   html += '</tbody></table></div>';
